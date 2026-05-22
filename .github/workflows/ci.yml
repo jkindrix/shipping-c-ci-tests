@@ -34,7 +34,7 @@ jobs:
       - name: Configure
         env:
           CC: ${{ matrix.cc }}
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-Werror
 
       - name: Build
         run: cmake --build build
