@@ -41,3 +41,59 @@ jobs:
 
       - name: Smoke test
         run: echo "20" | ./build/primes
+
+  sanitizers:
+    name: sanitizers (ASan+UBSan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zlib1g-dev
+
+      - name: Configure (Debug = sanitizers via CMakeLists generator expression)
+        env:
+          CC: clang
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run under sanitizers
+        run: echo "20" | ./build/primes
+
+  coverage:
+    name: coverage (gcov)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib + lcov
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zlib1g-dev lcov
+
+      - name: Configure with coverage flags
+        env:
+          CC: gcc
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="--coverage"
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run the binary to produce .gcda
+        run: echo "20" | ./build/primes
+
+      - name: Run gcov on the source files
+        run: |
+          cd build
+          gcov -r ../primes.c ../main.c || true
+          ls *.gcov 2>/dev/null && head -20 primes.c.gcov 2>/dev/null || true
+
+      - name: Generate lcov report
+        run: |
+          cd build
+          lcov --capture --directory . --output-file coverage.info 2>&1 | tail -5
+          lcov --list coverage.info
