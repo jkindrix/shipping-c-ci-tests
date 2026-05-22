@@ -70,10 +70,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install zlib + lcov
+      - name: Install zlib
         run: |
           sudo apt-get update
-          sudo apt-get install -y zlib1g-dev lcov
+          sudo apt-get install -y zlib1g-dev
 
       - name: Configure with coverage flags
         env:
@@ -86,14 +86,13 @@ jobs:
       - name: Run the binary to produce .gcda
         run: echo "20" | ./build/primes
 
-      - name: Run gcov on the source files
+      - name: Run gcov and show per-file summary
         run: |
-          cd build
-          gcov -r ../primes.c ../main.c || true
-          ls *.gcov 2>/dev/null && head -20 primes.c.gcov 2>/dev/null || true
-
-      - name: Generate lcov report
-        run: |
-          cd build
-          lcov --capture --directory . --output-file coverage.info 2>&1 | tail -5
-          lcov --list coverage.info
+          cd build/CMakeFiles/primes_lib.dir
+          gcov -r ../../../primes.c
+          echo "===primes.c.gcov head==="
+          head -30 primes.c.gcov
+          cd ../primes.dir
+          gcov -r ../../../main.c
+          echo "===main.c.gcov head==="
+          head -30 main.c.gcov
