@@ -3,7 +3,6 @@
 #include "primes.h"
 
 int main(void) {
-    int unused_var = 42;
     fprintf(stderr, "primes (using zlib %s)\n", zlibVersion());
     int max;
     printf("Enter an integer (at least 2):\n");
