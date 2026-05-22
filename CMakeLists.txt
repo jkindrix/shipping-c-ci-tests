@@ -23,3 +23,13 @@ target_link_libraries(primes PRIVATE
 install(TARGETS primes RUNTIME DESTINATION bin)
 install(TARGETS primes_lib ARCHIVE DESTINATION lib)
 install(FILES primes.h DESTINATION include)
+
+option(BUILD_FUZZER "Build the libFuzzer harness (requires clang)" OFF)
+if(BUILD_FUZZER)
+    add_executable(fuzz_primes fuzz_primes.c)
+    target_link_libraries(fuzz_primes PRIVATE primes_lib)
+    target_compile_options(fuzz_primes PRIVATE
+        -fsanitize=fuzzer,address,undefined)
+    target_link_options(fuzz_primes PRIVATE
+        -fsanitize=fuzzer,address,undefined)
+endif()
