@@ -89,10 +89,10 @@ jobs:
       - name: Run gcov and show per-file summary
         run: |
           cd build/CMakeFiles/primes_lib.dir
-          gcov -r ../../../primes.c
+          gcov primes.c.gcno
           echo "===primes.c.gcov head==="
           head -30 primes.c.gcov
           cd ../primes.dir
-          gcov -r ../../../main.c
+          gcov main.c.gcno
           echo "===main.c.gcov head==="
           head -30 main.c.gcov
