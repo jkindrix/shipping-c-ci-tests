@@ -118,3 +118,22 @@ jobs:
 
       - name: Run libFuzzer for 30 seconds
         run: ./build/fuzz_primes -max_total_time=30 -print_final_stats=1
+
+  portable:
+    name: portable (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure portable example
+        run: cmake -B portable/build -S portable
+
+      - name: Build portable example
+        run: cmake --build portable/build
+
+      - name: Run portable example
+        run: ./portable/build/portable
